@@ -154,7 +154,7 @@
 
 }
 ?>*/
-    error_reporting(E_ALL);
+    /*error_reporting(E_ALL);
     ini_set('display_errors', 1);
     
     if (isset($_POST['register'])) {
@@ -202,7 +202,60 @@
         
         $stmt->close();
     }
+?>*/
+
+ include 'connection.php';
+ session_start();
+ error_reporting(E_ALL);
+ ini_set('display_errors', 1);
+
+ if (isset($_POST['register'])) {
+    $fname = mysqli_real_escape_string($conn, $_POST['fname']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    $mobile = mysqli_real_escape_string($conn, $_POST['mobile']);
+    $dob = mysqli_real_escape_string($conn, $_POST['dob']);
+    $gender = mysqli_real_escape_string($conn, $_POST['gender']);
+    $interests = mysqli_real_escape_string($conn, $_POST['interests']);
+
+    // Validate inputs
+    if (empty($fname) || empty($email) || empty($password) || empty($mobile) || empty($dob) || $gender === "Not Selected") {
+        echo "Please fill in all fields.";
+        exit;
+    }
+
+    // Validate checkbox
+    if (!isset($_POST['terms'])) {
+        echo "You must agree to the terms and conditions.";
+        exit;
+    }
+
+    // Check if the email already exists
+    $check_query = "SELECT * FROM user WHERE email = '$email'";
+    $result = mysqli_query($conn, $check_query);
+    if (mysqli_num_rows($result) > 0) {
+        echo "You are already registered! Redirecting to <a href='login.php'>login page</a>.";
+        exit;
+    }
+
+    // Hash the password
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+    // Use a prepared statement to insert data
+    $stmt = $conn->prepare("INSERT INTO user (fname, email, password, mobile, dob, gender, interests) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssss", $fname, $email, $hashed_password, $mobile, $dob, $gender, $interests);
+
+    if ($stmt->execute()) {
+        echo "Registration successful! Redirecting to login page...";
+        header("Refresh: 2; url=login.php"); // Redirect after 2 seconds
+        exit;
+    } else {
+        echo "Failed to insert data into database: " . $stmt->error;
+    }
+    $stmt->close();
+}
 ?>
+
 
 
 
