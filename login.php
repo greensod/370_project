@@ -25,9 +25,22 @@
                     <input type="submit" value="Login" class="btn" name="login">
                 </div>
             </div>
+            
+            <!-- Display error messages at the bottom -->
+            <?php if (isset($_GET['error'])): ?>
+                <div class="error" style="text-align: center; margin-top: 10px; color: red;">
+                    <?php 
+                    if ($_GET['error'] == 'invalid_password') {
+                        echo "Invalid password. Please try again.";
+                    } elseif ($_GET['error'] == 'user_not_found') {
+                        echo "No user found with this email.";
+                    }
+                    ?>
+                </div>
+            <?php endif; ?>
         </form>
-        <p>Don't have an account? <a href="form.php">Register here</a>.</p>
-
     </div>
+
+
 </body>
 </html>

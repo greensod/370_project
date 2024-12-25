@@ -23,10 +23,14 @@ if (isset($_POST['login'])) {
             header("Location: home.php");
             exit;
         } else {
-            echo "Invalid password.";
+            //echo "Invalid password.";
+            header("Location: login.php?error=invalid_password");
+            exit;
         }
     } else {
-        echo "No user found with this email.";
+        //echo "No user found with this email.";
+        header("Location: login.php?error=user_not_found");
+        exit;
     }
 }
 ?>
